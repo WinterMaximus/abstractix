@@ -82,7 +82,7 @@
     hostConfig = host.config or {};
     hostHome = host.home or {};
     username = hostHome.username or (throw "${toString hostFile}: home.username must be set");
-    system = hostConfig.system or (throw "${toString hostFile}: config.system must be set");
+    system = host.system or (throw "${toString hostFile}: system must be set");
   in
     lib.nixosSystem {
       inherit system;
