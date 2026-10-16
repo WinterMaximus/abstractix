@@ -54,12 +54,12 @@
   };
   config = {
     imports = [./hardware.nix]; # And anything else you want to manually import, within the hosts/laptop dir
-    system.stateVersion = "25.11";
-    networking.hostName = "wsl";
+    system.stateVersion = "26.05";
+    networking.hostName = "laptop";
   };
   home = {
     username = "user";
-    home.stateVersion = "25.11";
+    home.stateVersion = "26.05";
   };
 }
 ```
