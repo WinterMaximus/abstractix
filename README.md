@@ -29,6 +29,7 @@
       hostsDir = ./hosts;
       sysModsDir = ./modules/system;
       hmModsDir = ./modules/home;
+      # Add extraArgs if you need to pass extra arguments to all modules
     };
 }
 ```
