@@ -2,9 +2,10 @@
   inputs,
   nixpkgs,
   home-manager,
-  hostsDir,
-  sysModsDir,
-  hmModsDir,
+  hostsDir ? "./hosts",
+  sysModsDir ? "./modules/system",
+  hmModsDir ? "./modules/home",
+  extraArgs ? {},
 }: let
   lib = nixpkgs.lib;
 
@@ -86,7 +87,7 @@
   in
     lib.nixosSystem {
       inherit system;
-      specialArgs = {inherit inputs;};
+      specialArgs = {inherit inputs;} // extraArgs;
       modules =
         systemModules
         ++ [
@@ -96,7 +97,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              extraSpecialArgs = {inherit inputs;};
+              extraSpecialArgs = {inherit inputs;} // extraArgs;
               users.${username} =
                 {
                   imports = homeModules;
