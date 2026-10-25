@@ -25,7 +25,7 @@
     ...
   }:
     abstractix.lib.mkConfigurations {
-      inherit inputs nixpkgs home-manager;
+      inherit inputs nixpkgs home-manager; # Using home-manager is optional
       hostsDir = ./hosts;
       sysModsDir = ./modules/system;
       hmModsDir = ./modules/home;

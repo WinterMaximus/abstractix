@@ -1,7 +1,7 @@
 {
   inputs,
   nixpkgs,
-  home-manager,
+  home-manager ? null,
   hostsDir ? "./hosts",
   sysModsDir ? "./modules/system",
   hmModsDir ? "./modules/home",
@@ -28,7 +28,10 @@
   moduleName = file: lib.removeSuffix ".nix" (baseNameOf file); # Remove .nix for module names
 
   systemModuleFiles = discoverNixFiles sysModsDir;
-  homeModuleFiles = discoverNixFiles hmModsDir;
+  homeModuleFiles =
+    if home-manager != null
+    then discoverNixFiles hmModsDir
+    else null;
 
   hostEntries = let
     # Find hosts
@@ -79,16 +82,22 @@
     # Build the actual nixos system
     host = import hostFile;
     systemModules = selectModules "system" systemModuleFiles host;
-    homeModules = selectModules "home" homeModuleFiles host;
+    homeModules =
+      if home-manager != null
+      then selectModules "home" homeModuleFiles host
+      else null;
     hostConfig = host.config or {};
     hostHome = host.home or {};
-    username = hostHome.username or (throw "${toString hostFile}: home.username must be set");
+    username =
+      hostHome.username or (
+        if home-manager != null
+        then (throw "${toString hostFile}: home.username must be set")
+        else null
+      );
     system = host.system or (throw "${toString hostFile}: system must be set");
-  in
-    lib.nixosSystem {
-      inherit system;
-      specialArgs = {inherit inputs;} // extraArgs;
-      modules =
+    modules =
+      if home-manager != null
+      then
         systemModules
         ++ [
           hostConfig
@@ -105,7 +114,12 @@
                 // (removeAttrs hostHome ["username"]);
             };
           }
-        ];
+        ]
+      else systemModules ++ [hostConfig];
+  in
+    lib.nixosSystem {
+      inherit system modules;
+      specialArgs = {inherit inputs;} // extraArgs;
     };
 in {
   nixosConfigurations =
